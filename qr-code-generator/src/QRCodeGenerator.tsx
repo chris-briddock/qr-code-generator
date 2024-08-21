@@ -8,7 +8,6 @@ const QRCodeGenerator: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [qrCodeValue, setQRCodeValue] = useState<string>('');
   const [qrCodeType, setQRCodeType] = useState<QRCodeType>('URL');
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setInputText(e.target.value);
@@ -22,13 +21,6 @@ const QRCodeGenerator: React.FC = () => {
     setQRCodeType(e.target.value as QRCodeType);
     setInputText('');
     setMessage('');
-    setPdfFile(null);
-  };
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    if (e.target.files && e.target.files[0]) {
-      setPdfFile(e.target.files[0]);
-    }
   };
 
   const generateQRCode = (): void => {
@@ -37,18 +29,6 @@ const QRCodeGenerator: React.FC = () => {
       case 'URL':
         value = inputText;
         break;
-      case 'PDF':
-        if (pdfFile) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            if (reader.result) {
-              value = reader.result as string;
-              setQRCodeValue(value);
-            }
-          };
-          reader.readAsDataURL(pdfFile);
-        }
-        return;
       case 'Text':
         value = inputText;
         break;
@@ -96,7 +76,6 @@ const QRCodeGenerator: React.FC = () => {
           className="px-4 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
         >
           <option value="URL">URL</option>
-          <option value="PDF">PDF</option>
           <option value="Text">Plain Text</option>
           <option value="SMS">SMS</option>
           <option value="Email">Email</option>
@@ -104,14 +83,6 @@ const QRCodeGenerator: React.FC = () => {
           <option value="Contact">Contact</option>
         </select>
         
-        {qrCodeType === 'PDF' ? (
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-          />
-        ) : (
           <>
             <input
               type="text"
@@ -130,7 +101,6 @@ const QRCodeGenerator: React.FC = () => {
               />
             )}
           </>
-        )}
         <button
           onClick={generateQRCode}
           className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none mt-4"
